@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
 import { Truck, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -98,7 +98,16 @@ export const Login = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <div className="mt-4 text-center">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-green-600 hover:text-green-700"
+          >
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+
+        <div className="mt-4 text-center text-sm text-gray-600">
           <p>Acceso exclusivo para personal de Ruta y Campo</p>
         </div>
       </div>

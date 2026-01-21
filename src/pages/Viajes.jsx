@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Eye, Edit2, Trash2, Truck, MapPin, Calendar, Package } from 'lucide-react';
+import { Search, Plus, Eye, Edit2, Trash2, Truck, MapPin, Calendar, Package, Send } from 'lucide-react';
 import tripService from '../services/trip.service';
 import { TripModal } from '../components/TripModal';
+import { SendOfferModal } from '../components/SendOfferModal';
 import { useLoading } from '../context/LoadingContext';
+import { useToast } from '../context/ToastContext';
 import { TRIP_STATUS } from '../constants';
 
 export const Viajes = () => {
   const { showLoading, hideLoading } = useLoading();
+  const { success, error: showError } = useToast();
   const [trips, setTrips] = useState([]);
   const [filteredTrips, setFilteredTrips] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,6 +17,7 @@ export const Viajes = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState(null);
+  const [sendOfferModal, setSendOfferModal] = useState(null);
 
   useEffect(() => {
     loadTrips();
@@ -27,6 +31,12 @@ export const Viajes = () => {
     try {
       setLoading(true);
       const data = await tripService.getAll();
+      console.log('🚚 TRIPS CARGADOS:', data);
+      if (data.length > 0) {
+        console.log('📋 PRIMER TRIP:', data[0]);
+        console.log('👤 PRODUCTOR:', data[0].producer);
+        console.log('🚛 TRANSPORTISTA:', data[0].transportista);
+      }
       setTrips(data);
     } catch (error) {
       console.error('Error al cargar viajes:', error);
@@ -65,6 +75,15 @@ export const Viajes = () => {
     setIsModalOpen(true);
   };
 
+  const handleSendOffer = (trip) => {
+    setSendOfferModal(trip);
+  };
+
+  const handleOfferSent = (result) => {
+    // Ya no se necesita porque el toast se muestra en SendOfferModal
+    loadTrips();
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('¿Estás seguro de eliminar este viaje?')) {
       return;
@@ -75,10 +94,11 @@ export const Viajes = () => {
       await tripService.delete(id);
       await loadTrips();
       hideLoading();
+      success('Viaje eliminado exitosamente');
     } catch (error) {
       hideLoading();
       console.error('Error al eliminar viaje:', error);
-      alert('Error al eliminar el viaje');
+      showError('Error al eliminar el viaje');
     }
   };
 
@@ -86,7 +106,18 @@ export const Viajes = () => {
     loadTrips();
   };
 
-  const getStatusBadge = (status) => {
+  const getSubStatusLabel = (subStatus) => {
+    const subStatusLabels = {
+      'llegue_a_cargar': '🚚 Llegué a cargar',
+      'cargado_saliendo': '📦 Cargado, saliendo',
+      'en_camino': '🛣️ En camino',
+      'llegue_a_destino': '📍 Llegué a destino',
+      'descargado': '✅ Descargado'
+    };
+    return subStatusLabels[subStatus] || null;
+  };
+
+  const getStatusBadge = (status, subStatus) => {
     const statusConfig = {
       [TRIP_STATUS.SOLICITADO]: { color: 'bg-blue-100 text-blue-800', label: 'Solicitado' },
       [TRIP_STATUS.COTIZANDO]: { color: 'bg-yellow-100 text-yellow-800', label: 'Cotizando' },
@@ -97,11 +128,19 @@ export const Viajes = () => {
     };
 
     const config = statusConfig[status] || { color: 'bg-gray-100 text-gray-800', label: status };
+    const subLabel = getSubStatusLabel(subStatus);
     
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
-        {config.label}
-      </span>
+      <div className="flex flex-col gap-1">
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+          {config.label}
+        </span>
+        {subLabel && (
+          <span className="text-xs text-gray-600">
+            {subLabel}
+          </span>
+        )}
+      </div>
     );
   };
 
@@ -151,25 +190,25 @@ export const Viajes = () => {
             </button>
             <button
               onClick={() => setStatusFilter(TRIP_STATUS.SOLICITADO)}
-              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.SOLICITADO ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}`}
+              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.SOLICITADO ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               Solicitado
             </button>
             <button
               onClick={() => setStatusFilter(TRIP_STATUS.COTIZANDO)}
-              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.COTIZANDO ? 'bg-yellow-600 text-white' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'}`}
+              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.COTIZANDO ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               Cotizando
             </button>
             <button
               onClick={() => setStatusFilter(TRIP_STATUS.EN_CURSO)}
-              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.EN_CURSO ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'}`}
+              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.EN_CURSO ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               En Curso
             </button>
             <button
               onClick={() => setStatusFilter(TRIP_STATUS.FINALIZADO)}
-              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.FINALIZADO ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+              className={`px-3 py-1 rounded-lg text-sm ${statusFilter === TRIP_STATUS.FINALIZADO ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               Finalizado
             </button>
@@ -185,6 +224,9 @@ export const Viajes = () => {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Productor
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Transportista
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Ruta
@@ -206,7 +248,7 @@ export const Viajes = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredTrips.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
                     <Truck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p className="text-lg font-medium">No se encontraron viajes</p>
                     <p className="text-sm">
@@ -228,7 +270,12 @@ export const Viajes = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900">
-                        {trip.producer?.companyName || 'Sin asignar'}
+                        {trip.producer?.nombreContacto || '-'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900">
+                        {trip.transportista?.nombreConductor || '-'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -255,10 +302,19 @@ export const Viajes = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {getStatusBadge(trip.status)}
+                      {getStatusBadge(trip.status, trip.subStatus)}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {(trip.status === 'solicitado' || trip.status === 'cotizando' || trip.status === 'en_asignacion') && (
+                          <button
+                            onClick={() => handleSendOffer(trip)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
+                            title="Enviar oferta por WhatsApp"
+                          >
+                            <Send className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleEdit(trip)}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
@@ -297,6 +353,14 @@ export const Viajes = () => {
         trip={selectedTrip}
         onSuccess={handleModalSuccess}
       />
+
+      {sendOfferModal && (
+        <SendOfferModal
+          trip={sendOfferModal}
+          onClose={() => setSendOfferModal(null)}
+          onSuccess={handleOfferSent}
+        />
+      )}
     </div>
   );
 };

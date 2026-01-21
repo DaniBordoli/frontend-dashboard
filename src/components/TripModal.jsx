@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import tripService from '../services/trip.service';
-import { producerService } from '../services/producer.service';
 import { useLoading } from '../context/LoadingContext';
 
 export const TripModal = ({ isOpen, onClose, trip, onSuccess }) => {
   const { showLoading, hideLoading } = useLoading();
-  const [producers, setProducers] = useState([]);
   const [formData, setFormData] = useState({
-    producer: '',
     origin: {
       address: '',
       city: '',
@@ -30,13 +27,8 @@ export const TripModal = ({ isOpen, onClose, trip, onSuccess }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    loadProducers();
-  }, []);
-
-  useEffect(() => {
     if (trip) {
       setFormData({
-        producer: trip.producer?._id || trip.producer || '',
         origin: {
           address: trip.origin?.address || '',
           city: trip.origin?.city || '',
@@ -57,7 +49,6 @@ export const TripModal = ({ isOpen, onClose, trip, onSuccess }) => {
       });
     } else {
       setFormData({
-        producer: '',
         origin: { address: '', city: '', province: '' },
         destination: { address: '', city: '', province: '' },
         destinationType: 'puerto',
@@ -71,15 +62,6 @@ export const TripModal = ({ isOpen, onClose, trip, onSuccess }) => {
     }
     setError('');
   }, [trip, isOpen]);
-
-  const loadProducers = async () => {
-    try {
-      const data = await producerService.getAll();
-      setProducers(data);
-    } catch (error) {
-      console.error('Error loading producers:', error);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -150,27 +132,6 @@ export const TripModal = ({ isOpen, onClose, trip, onSuccess }) => {
               {error}
             </div>
           )}
-
-          {/* Productor */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Productor *
-            </label>
-            <select
-              name="producer"
-              value={formData.producer}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Seleccionar productor</option>
-              {producers.map(p => (
-                <option key={p._id} value={p._id}>
-                  {p.companyName} - {p.contactName}
-                </option>
-              ))}
-            </select>
-          </div>
 
           {/* Origen */}
           <div>

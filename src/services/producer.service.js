@@ -1,21 +1,30 @@
 import api from './api';
 
 // Mapear campos del frontend (inglés) al backend (español)
-const mapToBackend = (data) => ({
-  razonSocial: data.companyName,
-  cuit: data.cuit,
-  direccion: {
-    calle: data.address?.street,
-    ciudad: data.address?.city,
-    provincia: data.address?.province,
-    codigoPostal: data.address?.zipCode
-  },
-  nombreContacto: data.contactName,
-  emailContacto: data.email,
-  telefonoContacto: data.phone,
-  numeroWhatsapp: data.phone,
-  notas: data.notes
-});
+const mapToBackend = (data) => {
+  const mapped = {
+    razonSocial: data.companyName,
+    cuit: data.cuit,
+    direccion: {
+      calle: data.address?.street,
+      ciudad: data.address?.city,
+      provincia: data.address?.province,
+      codigoPostal: data.address?.zipCode
+    },
+    nombreContacto: data.contactName,
+    emailContacto: data.email,
+    telefonoContacto: data.phone,
+    numeroWhatsapp: data.phone,
+    notas: data.notes
+  };
+  
+  // Incluir password si existe (para crear usuario)
+  if (data.password) {
+    mapped.password = data.password;
+  }
+  
+  return mapped;
+};
 
 // Mapear campos del backend (español) al frontend (inglés)
 const mapToFrontend = (data) => ({
@@ -64,6 +73,14 @@ export const producerService = {
 
   delete: async (id) => {
     const response = await api.delete(`/productores/${id}`);
+    return response.data;
+  },
+
+  createAccess: async (id, email, password) => {
+    const response = await api.post(`/productores/${id}/create-access`, {
+      email,
+      password
+    });
     return response.data;
   },
 };

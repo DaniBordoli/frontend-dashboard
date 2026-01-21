@@ -8,7 +8,7 @@ const mapToBackend = (data) => ({
   licenciaConductor: data.driverLicense,
   patente: data.licensePlate,
   capacidad: data.capacity,
-  telefono: data.phone,
+  numeroWhatsapp: data.whatsappNumber,
   email: data.email,
   notas: data.notes
 });
@@ -22,9 +22,11 @@ const mapToFrontend = (data) => ({
   driverLicense: data.licenciaConductor,
   licensePlate: data.patente,
   capacity: data.capacidad,
-  phone: data.telefono,
+  whatsappNumber: data.numeroWhatsapp,
   email: data.email,
   notes: data.notas,
+  active: data.activo,
+  available: data.disponible,
   isActive: data.activo,
   isAvailable: data.disponible,
   createdAt: data.createdAt,

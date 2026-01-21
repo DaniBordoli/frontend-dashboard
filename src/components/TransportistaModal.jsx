@@ -12,7 +12,7 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
     driverLicense: '',
     licensePlate: '',
     capacity: '',
-    phone: '',
+    whatsappNumber: '',
     email: '',
     notes: ''
   });
@@ -27,7 +27,7 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
         driverLicense: transportista.driverLicense || '',
         licensePlate: transportista.licensePlate || '',
         capacity: transportista.capacity || '',
-        phone: transportista.phone || '',
+        whatsappNumber: transportista.whatsappNumber || '',
         email: transportista.email || '',
         notes: transportista.notes || ''
       });
@@ -39,7 +39,7 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
         driverLicense: '',
         licensePlate: '',
         capacity: '',
-        phone: '',
+        whatsappNumber: '',
         email: '',
         notes: ''
       });
@@ -190,17 +190,20 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Teléfono / WhatsApp *
+                WhatsApp *
               </label>
               <input
                 type="tel"
-                name="phone"
-                value={formData.phone}
+                name="whatsappNumber"
+                value={formData.whatsappNumber}
                 onChange={handleChange}
                 required
-                placeholder="+54 9 11 1234-5678"
+                placeholder="+5491112345678"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Formato: +54 seguido del código de área y número (sin espacios ni guiones)
+              </p>
             </div>
 
             <div>
