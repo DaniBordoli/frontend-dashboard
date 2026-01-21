@@ -17,6 +17,7 @@ export const ProductorModal = ({ productor, onClose }) => {
       province: '',
       zipCode: '',
     },
+    password: '',
   });
   const [error, setError] = useState('');
 
@@ -34,6 +35,7 @@ export const ProductorModal = ({ productor, onClose }) => {
           province: productor.address?.province || '',
           zipCode: productor.address?.zipCode || '',
         },
+        password: '',
       });
     }
   }, [productor]);
@@ -169,6 +171,37 @@ export const ProductorModal = ({ productor, onClose }) => {
                 </div>
               </div>
             </div>
+
+            {!productor && (
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Acceso al Portal</h3>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                  <p className="text-xs text-blue-800">
+                    Se creará automáticamente un usuario para que el productor pueda acceder al portal.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Contraseña *
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required={!productor}
+                      minLength={6}
+                      placeholder="Mínimo 6 caracteres"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      El email de contacto se usará como usuario de acceso
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-3">Dirección</h3>

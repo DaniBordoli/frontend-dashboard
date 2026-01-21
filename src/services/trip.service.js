@@ -69,6 +69,7 @@ const mapToFrontend = (data) => ({
   requestedTrucks: data.camionesSolicitados,
   notes: data.notas,
   status: data.estado,
+  subStatus: data.subEstado,
   pricing: data.precios ? {
     basePrice: data.precios.precioBase,
     proposedPrice: data.precios.precioPropuesto,
@@ -76,6 +77,7 @@ const mapToFrontend = (data) => ({
     finalPrice: data.precios.precioFinal
   } : undefined,
   transportista: data.transportista,
+  producer: data.productor,
   checkIns: data.checkIns?.map(ci => ({
     type: ci.tipo,
     timestamp: ci.fechaHora,
@@ -152,6 +154,11 @@ const tripService = {
 
   updateLocation: async (id, latitude, longitude) => {
     const response = await api.patch(`/trips/${id}/location`, { latitude, longitude });
+    return response.data;
+  },
+
+  delete: async (id) => {
+    const response = await api.delete(`/trips/${id}`);
     return response.data;
   }
 };
