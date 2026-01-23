@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Eye, Edit2, Trash2, Truck, MapPin, Calendar, Package, Send } from 'lucide-react';
+import { Search, Plus, Eye, Edit2, Trash2, Truck, MapPin, Calendar, Package, Send, Navigation } from 'lucide-react';
 import tripService from '../services/trip.service';
 import { TripModal } from '../components/TripModal';
 import { SendOfferModal } from '../components/SendOfferModal';
+import { TrackingModal } from '../components/TrackingModal';
 import { useLoading } from '../context/LoadingContext';
 import { useToast } from '../context/ToastContext';
 import { TRIP_STATUS } from '../constants';
@@ -18,6 +19,7 @@ export const Viajes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [sendOfferModal, setSendOfferModal] = useState(null);
+  const [trackingModal, setTrackingModal] = useState(null);
 
   useEffect(() => {
     loadTrips();
@@ -306,6 +308,15 @@ export const Viajes = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {trip.status === 'en_curso' && trip.trackingActivo && (
+                          <button
+                            onClick={() => setTrackingModal(trip)}
+                            className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg"
+                            title="Ver tracking en vivo"
+                          >
+                            <Navigation className="w-5 h-5" />
+                          </button>
+                        )}
                         {(trip.status === 'solicitado' || trip.status === 'cotizando' || trip.status === 'en_asignacion') && (
                           <button
                             onClick={() => handleSendOffer(trip)}
@@ -359,6 +370,13 @@ export const Viajes = () => {
           trip={sendOfferModal}
           onClose={() => setSendOfferModal(null)}
           onSuccess={handleOfferSent}
+        />
+      )}
+
+      {trackingModal && (
+        <TrackingModal
+          viaje={trackingModal}
+          onClose={() => setTrackingModal(null)}
         />
       )}
     </div>
