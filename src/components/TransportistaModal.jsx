@@ -7,11 +7,8 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
   const { showLoading, hideLoading } = useLoading();
   const [formData, setFormData] = useState({
     companyName: '',
+    name: '',
     cuit: '',
-    driverName: '',
-    driverLicense: '',
-    licensePlate: '',
-    capacity: '',
     whatsappNumber: '',
     email: '',
     notes: ''
@@ -22,11 +19,8 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
     if (transportista) {
       setFormData({
         companyName: transportista.companyName || '',
+        name: transportista.name || '',
         cuit: transportista.cuit || '',
-        driverName: transportista.driverName || '',
-        driverLicense: transportista.driverLicense || '',
-        licensePlate: transportista.licensePlate || '',
-        capacity: transportista.capacity || '',
         whatsappNumber: transportista.whatsappNumber || '',
         email: transportista.email || '',
         notes: transportista.notes || ''
@@ -34,11 +28,8 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
     } else {
       setFormData({
         companyName: '',
+        name: '',
         cuit: '',
-        driverName: '',
-        driverLicense: '',
-        licensePlate: '',
-        capacity: '',
         whatsappNumber: '',
         email: '',
         notes: ''
@@ -116,6 +107,19 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nombre del Transportista
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 CUIT *
               </label>
               <input
@@ -125,65 +129,6 @@ export const TransportistaModal = ({ isOpen, onClose, transportista, onSuccess }
                 onChange={handleChange}
                 required
                 placeholder="20-12345678-9"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nombre del Conductor *
-              </label>
-              <input
-                type="text"
-                name="driverName"
-                value={formData.driverName}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Licencia de Conducir *
-              </label>
-              <input
-                type="text"
-                name="driverLicense"
-                value={formData.driverLicense}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Patente *
-              </label>
-              <input
-                type="text"
-                name="licensePlate"
-                value={formData.licensePlate}
-                onChange={handleChange}
-                required
-                placeholder="ABC123"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Capacidad (toneladas) *
-              </label>
-              <input
-                type="number"
-                name="capacity"
-                value={formData.capacity}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.1"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>

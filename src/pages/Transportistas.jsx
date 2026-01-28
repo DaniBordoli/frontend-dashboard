@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, Power, PowerOff, Truck } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Power, PowerOff, Truck, TruckIcon } from 'lucide-react';
 import transportistaService from '../services/transportista.service';
 import { TransportistaModal } from '../components/TransportistaModal';
+import { AssignCamionModal } from '../components/AssignCamionModal';
 import { useLoading } from '../context/LoadingContext';
 
 export const Transportistas = () => {
@@ -11,6 +12,7 @@ export const Transportistas = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedTransportista, setSelectedTransportista] = useState(null);
 
   useEffect(() => {
@@ -42,9 +44,7 @@ export const Transportistas = () => {
     const term = searchTerm.toLowerCase();
     const filtered = transportistas.filter(t =>
       t.companyName?.toLowerCase().includes(term) ||
-      t.driverName?.toLowerCase().includes(term) ||
-      t.cuit?.toLowerCase().includes(term) ||
-      t.licensePlate?.toLowerCase().includes(term)
+      t.cuit?.toLowerCase().includes(term)
     );
     setFilteredTransportistas(filtered);
   };
@@ -93,6 +93,15 @@ export const Transportistas = () => {
     loadTransportistas();
   };
 
+  const handleAssignCamion = (transportista) => {
+    setSelectedTransportista(transportista);
+    setIsAssignModalOpen(true);
+  };
+
+  const handleAssignSuccess = () => {
+    loadTransportistas();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -106,7 +115,7 @@ export const Transportistas = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Transportistas</h1>
-          <p className="text-gray-600 mt-1">Gestión de transportistas y vehículos</p>
+          <p className="text-gray-600 mt-1">Gestión de empresas transportistas</p>
         </div>
         <button
           onClick={handleCreate}
@@ -123,7 +132,7 @@ export const Transportistas = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Buscar por razón social, conductor, CUIT o patente..."
+              placeholder="Buscar por razón social o CUIT..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -139,13 +148,10 @@ export const Transportistas = () => {
                   Razón Social
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Conductor
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Vehículo
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contacto
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Camión Asignado
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Estado
@@ -158,7 +164,7 @@ export const Transportistas = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredTransportistas.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
                     <Truck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p className="text-lg font-medium">No se encontraron transportistas</p>
                     <p className="text-sm">
@@ -172,25 +178,34 @@ export const Transportistas = () => {
                     <td className="px-6 py-4">
                       <div>
                         <div className="font-medium text-gray-900">{transportista.companyName}</div>
+                        {transportista.name && (
+                          <div className="text-sm text-gray-700">{transportista.name}</div>
+                        )}
                         <div className="text-sm text-gray-500">CUIT: {transportista.cuit}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <div className="text-sm text-gray-900">{transportista.driverName}</div>
-                        <div className="text-xs text-gray-500">Lic: {transportista.driverLicense}</div>
+                        <div className="text-sm text-gray-900">{transportista.whatsappNumber}</div>
+                        {transportista.email && (
+                          <div className="text-xs text-gray-500">{transportista.email}</div>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{transportista.licensePlate}</div>
-                        <div className="text-xs text-gray-500">
-                          {transportista.capacity} tn
+                      {transportista.camiones && transportista.camiones.length > 0 ? (
+                        <div className="flex items-center gap-2">
+                          <TruckIcon className="w-4 h-4 text-gray-400" />
+                          <div>
+                            <span className="text-sm text-gray-900 font-medium">{transportista.camiones[0].patente}</span>
+                            <span className="text-xs text-gray-500 ml-2">
+                              {transportista.camiones[0].marca} {transportista.camiones[0].modelo}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{transportista.phone}</div>
+                      ) : (
+                        <span className="text-sm text-gray-400 italic">Sin camión asignado</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
@@ -212,6 +227,13 @@ export const Transportistas = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleAssignCamion(transportista)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
+                          title="Asignar camión"
+                        >
+                          <Truck className="w-5 h-5" />
+                        </button>
                         <button
                           onClick={() => handleToggleAvailability(transportista._id)}
                           className={`p-2 rounded-lg ${
@@ -264,6 +286,13 @@ export const Transportistas = () => {
         onClose={() => setIsModalOpen(false)}
         transportista={selectedTransportista}
         onSuccess={handleModalSuccess}
+      />
+
+      <AssignCamionModal
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        transportista={selectedTransportista}
+        onSuccess={handleAssignSuccess}
       />
     </div>
   );

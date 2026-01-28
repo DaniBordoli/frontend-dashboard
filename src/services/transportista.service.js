@@ -3,11 +3,8 @@ import api from './api';
 // Mapear campos del frontend (inglés) al backend (español)
 const mapToBackend = (data) => ({
   razonSocial: data.companyName,
+  nombre: data.name,
   cuit: data.cuit,
-  nombreConductor: data.driverName,
-  licenciaConductor: data.driverLicense,
-  patente: data.licensePlate,
-  capacidad: data.capacity,
   numeroWhatsapp: data.whatsappNumber,
   email: data.email,
   notas: data.notes
@@ -17,11 +14,8 @@ const mapToBackend = (data) => ({
 const mapToFrontend = (data) => ({
   _id: data._id,
   companyName: data.razonSocial,
+  name: data.nombre,
   cuit: data.cuit,
-  driverName: data.nombreConductor,
-  driverLicense: data.licenciaConductor,
-  licensePlate: data.patente,
-  capacity: data.capacidad,
   whatsappNumber: data.numeroWhatsapp,
   email: data.email,
   notes: data.notas,
@@ -29,6 +23,7 @@ const mapToFrontend = (data) => ({
   available: data.disponible,
   isActive: data.activo,
   isAvailable: data.disponible,
+  camiones: data.camiones || [],
   createdAt: data.createdAt,
   updatedAt: data.updatedAt
 });

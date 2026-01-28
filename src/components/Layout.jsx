@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Users,
   Truck,
+  TruckIcon,
   DollarSign,
   MapPin,
   Menu,
@@ -17,6 +18,7 @@ const menuItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/productores', icon: Users, label: 'Productores' },
   { path: '/transportistas', icon: Truck, label: 'Transportistas' },
+  { path: '/camiones', icon: TruckIcon, label: 'Camiones' },
   { path: '/tarifas', icon: DollarSign, label: 'Tarifas' },
   { path: '/viajes', icon: MapPin, label: 'Viajes' },
 ];
